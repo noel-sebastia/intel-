@@ -171,14 +171,12 @@ sphinxcontrib-serializinghtml==1.1.10
 srsly==2.4.8
 storage3==0.7.6
 StrEnum==0.4.15
-supabase==2.5.1
 supafunc==0.4.6
 sympy==1.12.1
 tbb==2021.12.0
 tensorboard==2.16.2
 tensorboard-data-server==0.7.2
 tensorflow==2.16.1
-tensorflow-intel==2.16.1
 termcolor==2.4.0
 thinc==8.2.4
 threadpoolctl==3.5.0
