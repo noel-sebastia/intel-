@@ -43,12 +43,12 @@ def search():
     query_type = request.form.get('query_type')
     
     if not query or not query_type:
-        return render_template('scrape.html', error="Please provide both query and query type.")
+        return render_template('scrpe.html', error="Please provide both query and query type.")
     
     keywords = extract_keywords(query)
     result = scrape_information(' '.join(keywords), query_type)
     
-    return render_template('scrape.html', query=query, query_type=query_type, result=result)
+    return render_template('scrpe.html', query=query, query_type=query_type, result=result)
 
 # Function to extract keywords from a query
 def extract_keywords(query):
@@ -130,7 +130,7 @@ def download(file_type):
     content = request.form.get('content')
     
     if not query or not query_type or not content:
-        return render_template('scrape.html', error="Missing data to generate file.")
+        return render_template('scrpe.html', error="Missing data to generate file.")
     
     result = {"content": content, "images": []}
     
@@ -144,7 +144,7 @@ def download(file_type):
         create_docx(query, query_type, result)
         return send_file("Nobestudy.docx", as_attachment=True)
     else:
-        return render_template('scrape.html', error="Invalid file type.")
+        return render_template('scrpe.html', error="Invalid file type.")
 
 # Function to create PDF
 def create_pdf(query, query_type, result):
