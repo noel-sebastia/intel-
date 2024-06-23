@@ -25,11 +25,11 @@ celery.conf.update(app.config)
 client = MongoClient("mongodb://localhost:27017/")
 db = client["scraped_data"]
 
-# Initialize NLP pipeline for question answering
+# Initialize NLP pipeline for question answering (disabling GPU usage)
 qa_model_name = "distilbert-base-cased-distilled-squad"
 tokenizer = AutoTokenizer.from_pretrained(qa_model_name)
 model = AutoModelForQuestionAnswering.from_pretrained(qa_model_name)
-qa_pipeline = pipeline('question-answering', model=model, tokenizer=tokenizer)
+qa_pipeline = pipeline('question-answering', model=model, tokenizer=tokenizer, device=-1)
 
 # Route for home page
 @app.route('/')
@@ -62,7 +62,8 @@ def scrape_information(query, query_type):
         f"https://simple.wikipedia.org/wiki/{query}",
         f"https://scholar.google.com/scholar?q={query}",
         f"https://en.wikipedia.org/wiki/{query}",
-        f"https://www.britannica.com/{query}"
+        f"https://www.britannica.com/{query}",
+        f"https://sw.wikipedia.org/wiki/{query}"  # Adding Swahili Wikipedia
     ]
     content_list, images, related_keywords = [], [], []
     
