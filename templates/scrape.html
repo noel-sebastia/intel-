@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web Scraping and Content Generation</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background: #f9f9f9;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .result {
+            margin-top: 20px;
+            border: 1px solid #ddd;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .image-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 10px;
+        }
+        .image-container img {
+            max-width: 100%;
+            max-height: 300px;
+            margin: 10px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Web Scraping and Content Generation</h2>
+        <form id="searchForm">
+            <div class="form-group">
+                <label for="query">Query:</label>
+                <input type="text" id="query" name="query" required>
+            </div>
+            <div class="form-group">
+                <label for="queryType">Select type:</label>
+                <select id="queryType" name="queryType">
+                    <option value="definition">Definition</option>
+                    <option value="essay">Essay</option>
+                    <option value="analysis">Analysis</option>
+                    <option value="description">Description</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <button type="submit">Search</button>
+            </div>
+        </form>
+
+        <div id="resultContainer" class="result"></div>
+        <form id="downloadForm" style="display: none;" method="POST" action="">
+            <input type="hidden" id="downloadQuery" name="query">
+            <input type="hidden" id="downloadQueryType" name="query_type">
+            <input type="hidden" id="downloadContent" name="content">
+            <div class="form-group">
+                <label for="fileType">Select file type to download:</label>
+                <select id="fileType" name="fileType">
+                    <option value="pdf">PDF</option>
+                    <option value="ppt">PPT</option>
+                    <option value="docx">DOCX</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <button type="submit">Download</button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        // Handle form submission with AJAX
+        document.getElementById('searchForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const query = document.getElementById('query').value;
+            const queryType = document.getElementById('queryType').value;
+            
+            fetch('/search', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({query: query, query_type: queryType})
+            })
+            .then(response => response.json())
+            .then(data => {
+                displayResults(data);
+                showDownloadForm(query, queryType, data.content);
+            })
+            .catch(error => console.error('Error:', error));
+        });
+
+        // Function to display results
+        function displayResults(data) {
+            const resultContainer = document.getElementById('resultContainer');
+            if (data.error) {
+                resultContainer.innerHTML = `<p style="color:red;">${data.error}</p>`;
+            } else {
+                resultContainer.innerHTML = `
+                    <h3>Results</h3>
+                    <p><strong>Content:</strong></p>
+                    <p>${data.content}</p>
+                    <div class="image-container">
+                        ${data.images.map(img => `<img src="${img}" alt="Image">`).join('')}
+                    </div>
+                    <p><strong>Related Keywords:</strong> ${data.related_keywords.join(', ')}</p>
+                `;
+            }
+        }
+
+        // Function to show download form with hidden inputs
+        function showDownloadForm(query, queryType, content) {
+            const downloadForm = document.getElementById('downloadForm');
+            document.getElementById('downloadQuery').value = query;
+            document.getElementById('downloadQueryType').value = queryType;
+            document.getElementById('downloadContent').value = content;
+            downloadForm.style.display = 'block';
+            downloadForm.action = `/download/${document.getElementById('fileType').value}`;
+        }
+
+        // Update download form action when file type is changed
+        document.getElementById('fileType').addEventListener('change', function() {
+            const downloadForm = document.getElementById('downloadForm');
+            downloadForm.action = `/download/${this.value}`;
+        });
+    </script>
+</body>
+</html>
